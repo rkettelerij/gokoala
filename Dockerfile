@@ -9,13 +9,16 @@ RUN npm install
 RUN npm run build
 
 ####### Go build
-FROM ${REGISTRY}/golang:1.21-bookworm AS build-env
+FROM --platform=${BUILDPLATFORM:-linux/amd64} ${REGISTRY}/golang:1.21-bookworm AS build-env
 WORKDIR /go/src/service
 ADD . /go/src/service
+
+ARG TARGETARCH
 
 # enable cgo in order to interface with sqlite
 ENV CGO_ENABLED=1
 ENV GOOS=linux
+ENV GOARCH=${TARGETARCH}
 
 # install sqlite-related compile-time dependencies
 RUN set -eux && \
@@ -34,7 +37,7 @@ RUN go test -short && \
 RUN find . -type f -name "*.go" -delete && find . -type d -name "testdata" -prune -exec rm -rf {} \;
 
 ####### Final image (use debian tag since we rely on C-libs)
-FROM ${REGISTRY}/debian:bookworm-slim
+FROM --platform=${BUILDPLATFORM:-linux/amd64} ${REGISTRY}/debian:bookworm-slim
 
 # install sqlite-related runtime dependencies
 RUN set -eux && \
