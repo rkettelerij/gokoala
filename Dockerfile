@@ -28,7 +28,6 @@ RUN set -eux && \
 RUN GOARCH=${TARGETARCH} go mod download all
 
 ENV CC=aarch64-linux-gnu-gcc
-ENV CC_FOR_TARGET=gcc-aarch64-linux-gnu
 # build & test the binary with debug information removed.
 RUN GOARCH=${TARGETARCH} go test -short
 RUN GOARCH=${TARGETARCH} go build -v -ldflags '-w -s' -a -installsuffix cgo -o /gokoala github.com/PDOK/gokoala
