@@ -28,8 +28,8 @@ RUN set -eux && \
 RUN GOARCH=${TARGETARCH} go mod download all
 
 # build & test the binary with debug information removed.
-RUN GOARCH=${TARGETARCH} go test -short && \
-    go build -v -ldflags '-w -s' -a -installsuffix cgo -o /gokoala github.com/PDOK/gokoala
+RUN GOARCH=${TARGETARCH} go test -short
+RUN GOARCH=${TARGETARCH} go build -v -ldflags '-w -s' -a -installsuffix cgo -o /gokoala github.com/PDOK/gokoala
 
 # delete all go files (and testdata dirs) so only assets/templates/etc remain, since in a later
 # stage we need to copy these remaining files including their subdirectories to the final docker image.
