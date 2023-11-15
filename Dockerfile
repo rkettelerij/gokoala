@@ -18,7 +18,6 @@ ARG TARGETARCH
 # enable cgo in order to interface with sqlite
 ENV CGO_ENABLED=1
 ENV GOOS=linux
-ENV GOARCH=${TARGETARCH}
 
 # install sqlite-related compile-time dependencies
 RUN set -eux && \
@@ -26,10 +25,10 @@ RUN set -eux && \
     apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-mod-spatialite && \
     rm -rf /var/lib/apt/lists/*
 
-RUN go mod download all
+RUN GOARCH=${TARGETARCH} go mod download all
 
 # build & test the binary with debug information removed.
-RUN go test -short && \
+RUN GOARCH=${TARGETARCH} go test -short && \
     go build -v -ldflags '-w -s' -a -installsuffix cgo -o /gokoala github.com/PDOK/gokoala
 
 # delete all go files (and testdata dirs) so only assets/templates/etc remain, since in a later
