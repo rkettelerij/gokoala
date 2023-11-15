@@ -22,11 +22,13 @@ ENV GOOS=linux
 # install sqlite-related compile-time dependencies
 RUN set -eux && \
     apt-get update && \
-    apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-mod-spatialite && \
+    apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-mod-spatialite gcc-aarch64-linux-gnu && \
     rm -rf /var/lib/apt/lists/*
 
 RUN GOARCH=${TARGETARCH} go mod download all
 
+ENV CC=aarch64-linux-gnu-gcc
+ENV CC_FOR_TARGET=gcc-aarch64-linux-gnu
 # build & test the binary with debug information removed.
 RUN GOARCH=${TARGETARCH} go test -short
 RUN GOARCH=${TARGETARCH} go build -v -ldflags '-w -s' -a -installsuffix cgo -o /gokoala github.com/PDOK/gokoala
